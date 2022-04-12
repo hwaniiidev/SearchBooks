@@ -1,4 +1,4 @@
-package com.sinhwan.searchbooks
+package com.sinhwan.searchbooks.ui.search
 
 enum class SearchError(val errorMessage: String) {
     KEYWORD_IS_NULL("키워드를 입려해주세요."),

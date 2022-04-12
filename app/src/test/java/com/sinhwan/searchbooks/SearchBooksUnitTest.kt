@@ -1,5 +1,6 @@
 package com.sinhwan.searchbooks
 
+import com.sinhwan.searchbooks.ui.search.SearchViewModel
 import org.junit.Assert
 import org.junit.Test
 

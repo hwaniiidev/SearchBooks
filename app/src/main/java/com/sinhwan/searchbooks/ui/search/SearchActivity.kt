@@ -1,12 +1,12 @@
-package com.sinhwan.searchbooks
+package com.sinhwan.searchbooks.ui.search
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.sinhwan.searchbooks.R
 import com.sinhwan.searchbooks.databinding.ActivitySearchBinding
 
 class SearchActivity : AppCompatActivity() {

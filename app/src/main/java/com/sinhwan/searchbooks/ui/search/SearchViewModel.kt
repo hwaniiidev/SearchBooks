@@ -1,19 +1,21 @@
-package com.sinhwan.searchbooks
+package com.sinhwan.searchbooks.ui.search
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.sinhwan.searchbooks.repository.SearchRepositoryImpl
 
 class SearchViewModel : ViewModel() {
     val TAG = this::class.java.simpleName
     val searchKeyword = MutableLiveData<String>()
     private val _error = MutableLiveData<SearchError>()
     val error: LiveData<SearchError> = _error
+
     val OPERATOR_OR = '|'
     val OPERATOR_NOT = '-'
 
+    val searchRepository = SearchRepositoryImpl()
 
     fun searchBooks() {
         val searchValue = searchKeyword.value
@@ -23,8 +25,25 @@ class SearchViewModel : ViewModel() {
         }
 
         with(checkKeyword(searchValue)) {
-            if (isNullOrEmpty()) _error.value = SearchError.KEYWORD_OVER
+            if (isNullOrEmpty()) {
+                _error.value = SearchError.KEYWORD_OVER
+                return
+            }
         }
+
+        searchRepository.searchBooks(
+            keyword = searchValue,
+            onSuccess = { response ->
+                logd(response.toString())
+            },
+            onError = {
+                logd("ERROR")
+            },
+            onFailure = {
+                logd("FAILURE")
+            }
+        )
+
     }
 
     fun checkKeyword(searchValue: String): Array<String> {
