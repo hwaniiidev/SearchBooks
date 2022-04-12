@@ -2,7 +2,9 @@ package com.sinhwan.searchbooks
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sinhwan.searchbooks.databinding.ActivitySearchBinding
@@ -25,6 +27,12 @@ class SearchActivity : AppCompatActivity() {
             lifecycleOwner = this@SearchActivity
         }
 
+        viewModel.error.observe(this) {
+            toast(it.errorMessage)
+        }
+    }
 
+    private fun toast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
