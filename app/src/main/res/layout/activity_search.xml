@@ -41,11 +41,13 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_books"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             setSearchedBooks="@{viewModel.searchedBooks}"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            tools:layout_editor_absoluteX="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

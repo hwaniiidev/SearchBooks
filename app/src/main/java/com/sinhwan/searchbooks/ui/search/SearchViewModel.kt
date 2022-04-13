@@ -39,14 +39,17 @@ class SearchViewModel : ViewModel() {
         searchRepository.searchBooks(
             keyword = searchValue,
             onSuccess = { response ->
-                _searchedBooks.value = response.books
-                logd(response.toString())
+                if (response.total.toInt() == 0) {
+                    _error.value = SearchError.RESPONSE_IS_NULL
+                } else {
+                    _searchedBooks.value = response.books
+                }
             },
             onError = {
-                logd("ERROR")
+                _error.value = SearchError.RESPONSE_IS_ERROR
             },
             onFailure = {
-                logd("FAILURE")
+                _error.value = SearchError.NETWORK_FAILURE
             }
         )
 
