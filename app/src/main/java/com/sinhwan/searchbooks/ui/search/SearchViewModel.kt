@@ -1,9 +1,12 @@
 package com.sinhwan.searchbooks.ui.search
 
 import android.util.Log
+import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.RecyclerView
+import com.sinhwan.searchbooks.model.Book
 import com.sinhwan.searchbooks.repository.SearchRepositoryImpl
 
 class SearchViewModel : ViewModel() {
@@ -11,6 +14,8 @@ class SearchViewModel : ViewModel() {
     val searchKeyword = MutableLiveData<String>()
     private val _error = MutableLiveData<SearchError>()
     val error: LiveData<SearchError> = _error
+    private val _searchedBooks = MutableLiveData<List<Book>>()
+    val searchedBooks = _searchedBooks
 
     val OPERATOR_OR = '|'
     val OPERATOR_NOT = '-'
@@ -34,13 +39,17 @@ class SearchViewModel : ViewModel() {
         searchRepository.searchBooks(
             keyword = searchValue,
             onSuccess = { response ->
-                logd(response.toString())
+                if (response.total.toInt() == 0) {
+                    _error.value = SearchError.RESPONSE_IS_NULL
+                } else {
+                    _searchedBooks.value = response.books
+                }
             },
             onError = {
-                logd("ERROR")
+                _error.value = SearchError.RESPONSE_IS_ERROR
             },
             onFailure = {
-                logd("FAILURE")
+                _error.value = SearchError.NETWORK_FAILURE
             }
         )
 
@@ -89,5 +98,4 @@ class SearchViewModel : ViewModel() {
     fun logd(msg: String) {
         Log.d(TAG, msg)
     }
-
 }
