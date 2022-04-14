@@ -6,8 +6,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface RetrofitService {
-    @GET("search/{query}")
+    @GET("search/{query}/{page}")
     fun getSearchedBooks(
-        @Path("query") query: String
+        @Path("query") query: String,
+        @Path("page") page: Int
     ): Call<ResponseGetBooks>
 }

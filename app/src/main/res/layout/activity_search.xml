@@ -36,12 +36,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="@string/search"
-                android:onClick="@{() -> viewModel.searchBooks()}"/>
+                android:onClick="@{() -> viewModel.onClickSearchButton()}"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_books"
             setSearchedBooks="@{viewModel.searchedBooks}"
+            onScrollListener="@{viewModel.onScrollListener}"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

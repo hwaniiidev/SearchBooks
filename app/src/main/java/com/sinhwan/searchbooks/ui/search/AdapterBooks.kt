@@ -32,10 +32,12 @@ class AdapterBooks : RecyclerView.Adapter<AdapterBooks.BookHolder>() {
     }
 
     fun addItem(items: List<Book>) {
-        books.run {
-            clear()
-            addAll(items)
-        }
+        books.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    fun clearItem() {
+        books.clear()
         notifyDataSetChanged()
     }
 

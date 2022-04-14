@@ -1,16 +1,22 @@
 package com.sinhwan.searchbooks.ui.search
 
 import android.util.Log
-import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sinhwan.searchbooks.model.Book
 import com.sinhwan.searchbooks.repository.SearchRepositoryImpl
 
 class SearchViewModel : ViewModel() {
     val TAG = this::class.java.simpleName
+
+    var currentPage = 1
+    var isLoading = false
+
+    var convertedKeyword = String()
+
     val searchKeyword = MutableLiveData<String>()
     private val _error = MutableLiveData<SearchError>()
     val error: LiveData<SearchError> = _error
@@ -22,7 +28,22 @@ class SearchViewModel : ViewModel() {
 
     val searchRepository = SearchRepositoryImpl()
 
-    fun searchBooks() {
+    val onScrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(view, dx, dy)
+            with((view.layoutManager!!) as LinearLayoutManager) {
+                if (!isLoading && findLastCompletelyVisibleItemPosition() > (itemCount - 5)) {
+                    currentPage++
+                    isLoading = true
+                    searchBooks()
+                }
+            }
+        }
+    }
+
+    fun onClickSearchButton() {
+        _searchedBooks.value = null
+        currentPage = 1
         val searchValue = searchKeyword.value
         if (searchValue.isNullOrBlank()) {
             _error.value = SearchError.KEYWORD_IS_NULL
@@ -36,23 +57,32 @@ class SearchViewModel : ViewModel() {
             }
         }
 
+        convertedKeyword = searchValue
+        searchBooks()
+
+    }
+
+    fun searchBooks() {
         searchRepository.searchBooks(
-            keyword = searchValue,
+            keyword = convertedKeyword,
+            page = currentPage,
             onSuccess = { response ->
                 if (response.total.toInt() == 0) {
                     _error.value = SearchError.RESPONSE_IS_NULL
                 } else {
                     _searchedBooks.value = response.books
                 }
+                isLoading = false
             },
             onError = {
                 _error.value = SearchError.RESPONSE_IS_ERROR
+                isLoading = false
             },
             onFailure = {
                 _error.value = SearchError.NETWORK_FAILURE
+                isLoading = false
             }
         )
-
     }
 
     fun checkKeyword(searchValue: String): Array<String> {
@@ -94,6 +124,8 @@ class SearchViewModel : ViewModel() {
 
         return arrayOf(keyword)
     }
+
+
 
     fun logd(msg: String) {
         Log.d(TAG, msg)
