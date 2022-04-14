@@ -12,11 +12,12 @@ class SearchRemoteDataImpl : SearchRemoteData{
 
     override fun searchBooks(
         keyword: String,
+        page: Int,
         onSuccess: (response: ResponseGetBooks) -> Unit,
         onError: (errorMessage: String) -> Unit,
         onFailure: (t: Throwable) -> Unit,
     ) {
-        api.getSearchedBooks(keyword)
+        api.getSearchedBooks(keyword, page)
             .enqueue(object : Callback<ResponseGetBooks> {
                 override fun onResponse(
                     call: Call<ResponseGetBooks>,

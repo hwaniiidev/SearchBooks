@@ -7,11 +7,12 @@ class SearchRepositoryImpl : SearchRepository{
 
     override fun searchBooks(
         keyword: String,
+        page: Int,
         onSuccess: (response: ResponseGetBooks) -> Unit,
         onError: (errorMessage: String) -> Unit,
         onFailure: (t: Throwable) -> Unit,
     ) {
-        searchRemoteData.searchBooks(keyword, onSuccess, onError, onFailure)
+        searchRemoteData.searchBooks(keyword, page, onSuccess, onError, onFailure)
     }
 
 }

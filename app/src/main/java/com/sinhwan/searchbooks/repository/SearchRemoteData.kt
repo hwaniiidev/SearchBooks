@@ -9,6 +9,7 @@ interface SearchRemoteData {
      */
     fun searchBooks(
         keyword: String,
+        page: Int,
         onSuccess: (response: ResponseGetBooks) -> Unit,
         onError: (errorMessage: String) -> Unit,
         onFailure: (t: Throwable) -> Unit
