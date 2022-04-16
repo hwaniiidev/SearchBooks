@@ -18,15 +18,42 @@ fun setSearchedBooks(view: RecyclerView, books: List<Book>?) {
     }
 }
 
-@BindingAdapter("loadImage")
-fun loadImage(view: ImageView, url: String) {
+@BindingAdapter("loadImage", "progress")
+fun loadImage(view: ImageView, url: String, progress: ProgressBar) {
     Glide.with(view)
         .load(url)
+        .addListener(object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean,
+            ): Boolean {
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean,
+            ): Boolean {
+                progress.visibility = View.GONE
+                return false
+            }
+        })
         .error(R.drawable.ic_baseline_image_not_supported_24)
         .into(view)
+
 }
 
 @BindingAdapter("onScrollListener")
 fun setOnScrollListener(view: RecyclerView, listener: RecyclerView.OnScrollListener) {
     view.addOnScrollListener(listener)
+}
+
+@BindingAdapter("setVisibility")
+fun setVisibility(view: View, isVisible: Boolean) {
+    view.visibility = if (isVisible) View.VISIBLE else View.GONE
 }
