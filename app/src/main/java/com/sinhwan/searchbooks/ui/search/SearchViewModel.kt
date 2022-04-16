@@ -21,7 +21,7 @@ class SearchViewModel : ViewModel() {
     private val _error = MutableLiveData<SearchError>()
     val error: LiveData<SearchError> = _error
     private val _searchedBooks = MutableLiveData<List<Book>>()
-    val searchedBooks = _searchedBooks
+    val searchedBooks: LiveData<List<Book>> = _searchedBooks
 
     val OPERATOR_OR = '|'
     val OPERATOR_NOT = '-'

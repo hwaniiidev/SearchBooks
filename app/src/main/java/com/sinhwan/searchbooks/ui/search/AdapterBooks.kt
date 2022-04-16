@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sinhwan.searchbooks.R
 import com.sinhwan.searchbooks.databinding.ItemBookBinding
 import com.sinhwan.searchbooks.model.Book
+import com.sinhwan.searchbooks.ui.BookClickCallback
 
-class AdapterBooks : RecyclerView.Adapter<AdapterBooks.BookHolder>() {
+class AdapterBooks(
+    val clickCallback: BookClickCallback
+    ) : RecyclerView.Adapter<AdapterBooks.BookHolder>() {
     val books: ArrayList<Book> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookHolder {
@@ -18,6 +21,7 @@ class AdapterBooks : RecyclerView.Adapter<AdapterBooks.BookHolder>() {
             parent,
             false
         )
+        binding.clickCallback = clickCallback
         return BookHolder(binding)
     }
 

@@ -8,6 +8,9 @@
             name="viewModel"
             type="com.sinhwan.searchbooks.ui.search.SearchViewModel" />
 
+        <variable
+            name="clickCallback"
+            type="com.sinhwan.searchbooks.ui.BookClickCallback" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -42,6 +45,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_books"
             setSearchedBooks="@{viewModel.searchedBooks}"
+            clickCallback="@{clickCallback}"
             onScrollListener="@{viewModel.onScrollListener}"
             android:layout_width="match_parent"
             android:layout_height="0dp"

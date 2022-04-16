@@ -8,11 +8,15 @@
         <variable
             name="book"
             type="com.sinhwan.searchbooks.model.Book" />
+        <variable
+            name="clickCallback"
+            type="com.sinhwan.searchbooks.ui.BookClickCallback" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> clickCallback.onClick(book)}"
         android:orientation="horizontal">
 
         <ImageView

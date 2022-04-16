@@ -1,16 +1,24 @@
 package com.sinhwan.searchbooks.ui.search
 
+import android.graphics.drawable.Drawable
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.sinhwan.searchbooks.R
 import com.sinhwan.searchbooks.model.Book
+import com.sinhwan.searchbooks.ui.BookClickCallback
 
-@BindingAdapter("setSearchedBooks")
-fun setSearchedBooks(view: RecyclerView, books: List<Book>?) {
+@BindingAdapter("setSearchedBooks", "clickCallback")
+fun setSearchedBooks(view: RecyclerView, books: List<Book>?, clickCallback: BookClickCallback) {
     val adapter =
-        view.adapter as? AdapterBooks ?: AdapterBooks().apply { view.adapter = this }
+        view.adapter as? AdapterBooks ?: AdapterBooks(clickCallback).apply { view.adapter = this }
     if (!books.isNullOrEmpty()) {
         adapter.addItem(books)
     } else {
