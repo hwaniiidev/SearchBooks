@@ -18,7 +18,10 @@ import com.sinhwan.searchbooks.ui.BookClickCallback
 @BindingAdapter("setSearchedBooks", "clickCallback")
 fun setSearchedBooks(view: RecyclerView, books: List<Book>?, clickCallback: BookClickCallback) {
     val adapter =
-        view.adapter as? AdapterBooks ?: AdapterBooks(clickCallback).apply { view.adapter = this }
+        view.adapter as? AdapterBooks ?: AdapterBooks(clickCallback).apply {
+            setHasStableIds(true)
+            view.adapter = this
+        }
     if (!books.isNullOrEmpty()) {
         adapter.addItem(books)
     } else {

@@ -35,6 +35,10 @@ class AdapterBooks(
         return books.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
     fun addItem(items: List<Book>) {
         books.addAll(items)
         notifyDataSetChanged()
