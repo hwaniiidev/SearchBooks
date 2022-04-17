@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SearchBooks">
         <activity
+            android:name=".ui.detailbook.DetailBookActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.search.SearchActivity"
             android:exported="true">
             <intent-filter>

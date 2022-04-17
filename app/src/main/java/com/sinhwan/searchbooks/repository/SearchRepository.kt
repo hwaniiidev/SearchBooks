@@ -5,13 +5,13 @@ import com.sinhwan.searchbooks.model.ResponseGetBooks
 interface SearchRepository {
 
     /**
-     * 책 검색.
+     * 책 검색
+     *
+     * @param keyword 검색 키워드
+     * @param page    검색 page
      */
-    fun searchBooks(
+    suspend fun searchBooks(
         keyword: String,
-        page: Int,
-        onSuccess: (response: ResponseGetBooks) -> Unit,
-        onError: (errorMessage: String) -> Unit,
-        onFailure: (t: Throwable) -> Unit
-    )
+        page: Int
+    ) : ResponseGetBooks
 }

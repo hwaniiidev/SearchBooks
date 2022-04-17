@@ -8,6 +8,10 @@
             name="viewModel"
             type="com.sinhwan.searchbooks.ui.search.SearchViewModel" />
 
+        <variable
+            name="clickCallback"
+            type="com.sinhwan.searchbooks.ui.BookClickCallback" />
+
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -41,13 +45,34 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_books"
-            setSearchedBooks="@{viewModel.searchedBooks}"
+            clickCallback="@{clickCallback}"
             onScrollListener="@{viewModel.onScrollListener}"
+            setSearchedBooks="@{viewModel.searchedBooks}"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textView4"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            tools:layout_editor_absoluteX="8dp" />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            setVisibility="@{viewModel.isLoading}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/main_padding"
+            android:gravity="center"
+            setVisibility="@{viewModel.isPageOver}"
+            android:text="검색 결과가 더 이상 없습니다."
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:layout_editor_absoluteX="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
