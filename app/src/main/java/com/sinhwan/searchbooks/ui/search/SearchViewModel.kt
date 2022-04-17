@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sinhwan.searchbooks.model.Book
 import com.sinhwan.searchbooks.repository.SearchRepositoryImpl
+import com.sinhwan.searchbooks.ui.INFINITE_SCROLL_FIRST_INDEX
+import com.sinhwan.searchbooks.ui.INFINITE_SCROLL_INDEX
 import kotlinx.coroutines.*
 import java.net.UnknownHostException
 
@@ -15,11 +17,16 @@ class SearchViewModel : ViewModel() {
     val TAG = this::class.java.simpleName
 
     var currentPage = 1
-    var isLoading = false
-
+    var isFirstRequest = true
     lateinit var convertedKeywords: Array<String>
-
     val searchKeyword = MutableLiveData<String>()
+
+    private var _isPageOver = MutableLiveData<Boolean>()
+    val isPageOver: LiveData<Boolean> = _isPageOver
+    private var _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+    private val _hideKeyboard = MutableLiveData<Unit>()
+    val hideKeyboard: LiveData<Unit> = _hideKeyboard
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
     private val _searchedBooks = MutableLiveData<List<Book>>()
@@ -34,16 +41,21 @@ class SearchViewModel : ViewModel() {
     val onScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(view, dx, dy)
+            val srollIndex = if (isFirstRequest) INFINITE_SCROLL_FIRST_INDEX else INFINITE_SCROLL_INDEX
             with((view.layoutManager!!) as LinearLayoutManager) {
-                if (!isLoading && findLastCompletelyVisibleItemPosition() > (itemCount - 5)) {
-                    isLoading = true
+                if (!isLoading.value!! &&
+                    !isPageOver.value!! &&
+                    findLastCompletelyVisibleItemPosition() > (itemCount - srollIndex)) {
                     checkOperatorSearch(convertedKeywords)
+                    isFirstRequest = false
                 }
             }
         }
     }
 
     fun onClickSearchButton() {
+        isFirstRequest = true
+        _isPageOver.value = false
         _searchedBooks.value = null
         currentPage = 1
         val searchValue = searchKeyword.value
@@ -86,12 +98,14 @@ class SearchViewModel : ViewModel() {
     }
 
     fun checkOperatorSearch(keywords: Array<String>) {
+        _isLoading.value = true
+        _hideKeyboard.value = Unit
         if (keywords.size == 1) {
             CoroutineScope(Dispatchers.Main).launch(exceptionHandler) {
                 val response = async {
                     searchRepository.searchBooks(keywords[0], currentPage)
                 }.await()
-                isLoading = false
+                _isLoading.value = false
 
                 if (response.error != "0") {
                     _error.value = SearchError.RESPONSE_IS_ERROR.errorMessage
@@ -99,6 +113,11 @@ class SearchViewModel : ViewModel() {
                 }
 
                 if (response.total.toInt() == 0) {
+                    if (currentPage > 1) {
+                        _isPageOver.value = true
+                        _error.value = SearchError.PAGE_IS_OVER.errorMessage
+                        return@launch
+                    }
                     _error.value = SearchError.RESPONSE_IS_NULL.errorMessage
                     return@launch
                 }
@@ -119,7 +138,7 @@ class SearchViewModel : ViewModel() {
                 }
                 val responseFirst = aysncFirst.await()
                 val responseSecond = aysncSecond.await()
-                isLoading = false
+                _isLoading.value = false
 
                 if (responseFirst.error != "0" || responseSecond.error != "0") {
                     _error.value = SearchError.RESPONSE_IS_ERROR.errorMessage
@@ -132,12 +151,18 @@ class SearchViewModel : ViewModel() {
                 }
                 
                 if (responseFirst.total.toInt() == 0) {
-                    _error.value = getNoneWithKeywordMessage(keywords[1], keywords[2])
+                    if (currentPage > 1) {
+                        _error.value = getNoneWithKeywordMessage(keywords[1], keywords[2], true)
+                    }
+                    _error.value = getNoneWithKeywordMessage(keywords[1], keywords[2], false)
                     convertedKeywords = arrayOf(keywords[2])
                 }
 
                 if (responseSecond.total.toInt() == 0) {
-                    _error.value = getNoneWithKeywordMessage(keywords[2], keywords[1])
+                    if (currentPage > 1) {
+                        _error.value = getNoneWithKeywordMessage(keywords[1], keywords[2], true)
+                    }
+                    _error.value = getNoneWithKeywordMessage(keywords[2], keywords[1], false)
                     convertedKeywords = arrayOf(keywords[1])
                 }
 
@@ -156,7 +181,7 @@ class SearchViewModel : ViewModel() {
                 val response = async {
                     searchRepository.searchBooks(keywords[1], currentPage)
                 }.await()
-                isLoading = false
+                _isLoading.value = false
 
                 if (response.error != "0") {
                     _error.value = SearchError.RESPONSE_IS_ERROR.errorMessage
@@ -164,6 +189,11 @@ class SearchViewModel : ViewModel() {
                 }
 
                 if (response.total.toInt() == 0) {
+                    if (currentPage > 1) {
+                        _isPageOver.value = true
+                        _error.value = SearchError.PAGE_IS_OVER.errorMessage
+                        return@launch
+                    }
                     _error.value = SearchError.RESPONSE_IS_NULL.errorMessage
                     return@launch
                 }
@@ -217,8 +247,13 @@ class SearchViewModel : ViewModel() {
         return arrayOf(keyword)
     }
 
-    private fun getNoneWithKeywordMessage(noneKeyword: String, withKeyword: String) : String {
-        return "'$noneKeyword'의 검색 결과가 없습니다. ${getOnlyKeywordMessage(withKeyword)}"
+    private fun getNoneWithKeywordMessage(
+        noneKeyword: String,
+        withKeyword: String,
+        noMore: Boolean
+    ) : String {
+        val strNoMore = if (noMore) " 더 이상" else ""
+        return "'$noneKeyword'의 검색 결과가$strNoMore 없습니다. ${getOnlyKeywordMessage(withKeyword)}"
     }
 
     private fun getOnlyKeywordMessage(keyword: String) : String {

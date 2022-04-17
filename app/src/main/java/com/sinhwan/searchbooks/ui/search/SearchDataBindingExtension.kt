@@ -31,6 +31,7 @@ fun setSearchedBooks(view: RecyclerView, books: List<Book>?, clickCallback: Book
 
 @BindingAdapter("loadImage", "progress")
 fun loadImage(view: ImageView, url: String, progress: ProgressBar) {
+    progress.visibility = View.VISIBLE
     Glide.with(view)
         .load(url)
         .addListener(object : RequestListener<Drawable> {

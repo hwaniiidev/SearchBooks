@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +20,7 @@ import kotlinx.coroutines.Dispatchers.Main
 
 class SearchActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchBinding
+    lateinit private var imm: InputMethodManager
 
     private val bookClickCallback = object : BookClickCallback {
         override fun onClick(book: Book) {
@@ -46,8 +48,14 @@ class SearchActivity : AppCompatActivity() {
             clickCallback = bookClickCallback
         }
 
+        imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
         viewModel.error.observe(this) {
             toast(it)
+        }
+
+        viewModel.hideKeyboard.observe(this) {
+            imm.hideSoftInputFromWindow(binding.editKeyword.windowToken, 0)
         }
     }
 }

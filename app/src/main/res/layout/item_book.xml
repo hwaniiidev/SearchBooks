@@ -60,11 +60,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{book.title}"
+                android:maxLines="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:ellipsize="end"
                 tools:text="title" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                setVisibility="@{book.subtitle != null &amp;&amp; book.subtitle.length() != 0}"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text="@{book.subtitle}"

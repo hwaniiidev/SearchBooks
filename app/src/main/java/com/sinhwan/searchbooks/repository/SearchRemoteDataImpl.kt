@@ -1,11 +1,7 @@
 package com.sinhwan.searchbooks.repository
 
-import android.util.Log
 import com.sinhwan.searchbooks.ApiCall
 import com.sinhwan.searchbooks.model.ResponseGetBooks
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class SearchRemoteDataImpl : SearchRemoteData{
