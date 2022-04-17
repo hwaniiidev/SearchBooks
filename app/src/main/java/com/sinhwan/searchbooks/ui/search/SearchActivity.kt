@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers.Main
 
 class SearchActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchBinding
-    lateinit private var imm: InputMethodManager
+    private lateinit var imm: InputMethodManager
 
     private val bookClickCallback = object : BookClickCallback {
         override fun onClick(book: Book) {

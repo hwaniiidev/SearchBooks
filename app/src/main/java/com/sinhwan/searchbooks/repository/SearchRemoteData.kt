@@ -6,6 +6,9 @@ interface SearchRemoteData {
 
     /**
      * 책 검색
+     *
+     * @param keyword 검색 키워드
+     * @param page    검색 page
      */
     suspend fun searchBooks(
         keyword: String,
