@@ -14,6 +14,8 @@ import com.sinhwan.searchbooks.ui.BookClickCallback
 import com.sinhwan.searchbooks.ui.KEY_DETAIL_BOOK
 import com.sinhwan.searchbooks.ui.detailbook.DetailBookActivity
 import com.sinhwan.searchbooks.ui.toast
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
 
 class SearchActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchBinding
@@ -45,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         viewModel.error.observe(this) {
-            toast(it.errorMessage)
+            toast(it)
         }
     }
 }

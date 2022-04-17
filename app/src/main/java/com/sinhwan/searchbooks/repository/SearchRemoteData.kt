@@ -7,11 +7,8 @@ interface SearchRemoteData {
     /**
      * 책 검색
      */
-    fun searchBooks(
+    suspend fun searchBooks(
         keyword: String,
-        page: Int,
-        onSuccess: (response: ResponseGetBooks) -> Unit,
-        onError: (errorMessage: String) -> Unit,
-        onFailure: (t: Throwable) -> Unit
-    )
+        page: Int
+    ): ResponseGetBooks
 }
