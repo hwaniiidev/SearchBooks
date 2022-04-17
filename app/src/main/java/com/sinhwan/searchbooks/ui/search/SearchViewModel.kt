@@ -15,7 +15,7 @@ class SearchViewModel : ViewModel() {
     var currentPage = 1
     var isLoading = false
 
-    var convertedKeyword = String()
+    lateinit var convertedKeywords: Array<String>
 
     val searchKeyword = MutableLiveData<String>()
     private val _error = MutableLiveData<SearchError>()
@@ -24,8 +24,9 @@ class SearchViewModel : ViewModel() {
     val searchedBooks: LiveData<List<Book>> = _searchedBooks
 
     val OPERATOR_OR = '|'
+    val STR_OPERATOR_OR = OPERATOR_OR.toString()
     val OPERATOR_NOT = '-'
-
+    val STR_OPERATOR_NOT = OPERATOR_NOT.toString()
     val searchRepository = SearchRepositoryImpl()
 
     val onScrollListener = object : RecyclerView.OnScrollListener() {
@@ -35,7 +36,7 @@ class SearchViewModel : ViewModel() {
                 if (!isLoading && findLastCompletelyVisibleItemPosition() > (itemCount - 5)) {
                     currentPage++
                     isLoading = true
-                    searchBooks()
+                    checkOperatorSearch(convertedKeywords)
                 }
             }
         }
@@ -55,22 +56,55 @@ class SearchViewModel : ViewModel() {
                 _error.value = SearchError.KEYWORD_OVER
                 return
             }
+
+            if (size > 1 && this[1].lowercase().equals(this[2].lowercase())) {
+                if (this[0].equals(STR_OPERATOR_OR)) {
+                    _error.value = SearchError.KEYWORD_SAME_OR
+                    convertedKeywords = arrayOf(this[1])
+                    checkOperatorSearch(convertedKeywords)
+                    return
+                } else {
+                    _error.value = SearchError.KEYWORD_SAME_NOT
+                    return
+                }
+            }
+            convertedKeywords = this
+            checkOperatorSearch(convertedKeywords)
         }
 
-        convertedKeyword = searchValue
-        searchBooks()
 
     }
+    fun checkOperatorSearch(keywords: Array<String>) {
+        if (keywords.size == 1) {
+            searchBooks(keywords[0], null)
+            return
+        }
 
-    fun searchBooks() {
+        if (keywords[0].equals(STR_OPERATOR_OR)) {
+            return
+        }
+
+        if (keywords[0].equals(STR_OPERATOR_NOT)) {
+            searchBooks(keywords[1], keywords[2])
+            return
+        }
+    }
+
+    fun searchBooks(keword: String, excludedKeyword: String?) {
         searchRepository.searchBooks(
-            keyword = convertedKeyword,
+            keyword = keword,
             page = currentPage,
             onSuccess = { response ->
                 if (response.total.toInt() == 0) {
                     _error.value = SearchError.RESPONSE_IS_NULL
                 } else {
-                    _searchedBooks.value = response.books
+                    if (excludedKeyword != null) {
+                        _searchedBooks.value = response.books.filter {
+                            !it.title.lowercase().contains(excludedKeyword.lowercase())
+                        }
+                    } else {
+                        _searchedBooks.value = response.books
+                    }
                 }
                 isLoading = false
             },
@@ -112,13 +146,13 @@ class SearchViewModel : ViewModel() {
 
         if (keyword.contains(OPERATOR_OR)) {
             with(keyword.split(OPERATOR_OR)) {
-                return arrayOf(OPERATOR_OR.toString(), this[0] , this[1])
+                return arrayOf(STR_OPERATOR_OR, this[0] , this[1])
             }
         }
 
         if (keyword.contains(OPERATOR_NOT)) {
             with(keyword.split(OPERATOR_NOT)) {
-                return arrayOf(OPERATOR_NOT.toString(), this[0] , this[1])
+                return arrayOf(STR_OPERATOR_NOT, this[0] , this[1])
             }
         }
 
